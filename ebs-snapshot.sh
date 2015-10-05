@@ -50,6 +50,7 @@ log_setup() {
     #tmplog=$(tail -n $logfile_max_lines $logfile 2>/dev/null) && echo "${tmplog}" > $logfile
     #exec > >(tee -a $logfile)
     #exec 2>&1
+    return 0
 }
 
 # Function: Log an event.
@@ -112,10 +113,10 @@ cleanup_snapshots() {
 ## SCRIPT COMMANDS ##
 
 log_setup
-prerequisite_check
+#prerequisite_check
 
 # Grab all volume IDs attached to this instance
 volume_list=$(aws ec2 describe-volumes --region $region --filters Name=attachment.instance-id,Values=$instance_id --query Volumes[].VolumeId --output text)
 
-snapshot_volumes
-cleanup_snapshots
+#snapshot_volumes
+#cleanup_snapshots
