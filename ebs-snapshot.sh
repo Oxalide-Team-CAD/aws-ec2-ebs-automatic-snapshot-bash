@@ -36,7 +36,7 @@ logfile="/var/log/ebs-snapshot.log"
 logfile_max_lines="5000"
 
 # How many days do you wish to retain backups for? Default: 7 days
-retention_days="7"
+retention_days="30"
 retention_date_in_seconds=$(date +%s --date "$retention_days days ago")
 
 
@@ -45,11 +45,11 @@ retention_date_in_seconds=$(date +%s --date "$retention_days days ago")
 # Function: Setup logfile and redirect stdout/stderr.
 log_setup() {
     # Check if logfile exists and is writable.
-    ( [ -e "$logfile" ] || touch "$logfile" ) && [ ! -w "$logfile" ] && echo "ERROR: Cannot write to $logfile. Check permissions or sudo access." && exit 1
+    #( [ -e "$logfile" ] || touch "$logfile" ) && [ ! -w "$logfile" ] && echo "ERROR: Cannot write to $logfile. Check permissions or sudo access." && exit 1
 
-    tmplog=$(tail -n $logfile_max_lines $logfile 2>/dev/null) && echo "${tmplog}" > $logfile
-    exec > >(tee -a $logfile)
-    exec 2>&1
+    #tmplog=$(tail -n $logfile_max_lines $logfile 2>/dev/null) && echo "${tmplog}" > $logfile
+    #exec > >(tee -a $logfile)
+    #exec 2>&1
 }
 
 # Function: Log an event.
