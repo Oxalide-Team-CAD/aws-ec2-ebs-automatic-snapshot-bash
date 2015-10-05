@@ -45,12 +45,11 @@ retention_date_in_seconds=$(date +%s --date "$retention_days days ago")
 # Function: Setup logfile and redirect stdout/stderr.
 log_setup() {
     # Check if logfile exists and is writable.
-    #( [ -e "$logfile" ] || touch "$logfile" ) && [ ! -w "$logfile" ] && echo "ERROR: Cannot write to $logfile. Check permissions or sudo access." && exit 1
+    ( [ -e "$logfile" ] || touch "$logfile" ) && [ ! -w "$logfile" ] && echo "ERROR: Cannot write to $logfile. Check permissions or sudo access." && exit 1
 
-    #tmplog=$(tail -n $logfile_max_lines $logfile 2>/dev/null) && echo "${tmplog}" > $logfile
-    #exec > >(tee -a $logfile)
-    #exec 2>&1
-    return 0
+    tmplog=$(tail -n $logfile_max_lines $logfile 2>/dev/null) && echo "${tmplog}" > $logfile
+    exec > >(tee -a $logfile)
+    exec 2>&1
 }
 
 # Function: Log an event.
@@ -112,11 +111,11 @@ cleanup_snapshots() {
 
 ## SCRIPT COMMANDS ##
 
-log_setup
-#prerequisite_check
+#log_setup
+prerequisite_check
 
 # Grab all volume IDs attached to this instance
 volume_list=$(aws ec2 describe-volumes --region $region --filters Name=attachment.instance-id,Values=$instance_id --query Volumes[].VolumeId --output text)
 
-#snapshot_volumes
-#cleanup_snapshots
+snapshot_volumes
+cleanup_snapshots
