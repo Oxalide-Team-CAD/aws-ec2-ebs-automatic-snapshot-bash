@@ -13,6 +13,7 @@ set -o pipefail
 # Script Github repo: https://github.com/CaseyLabs/aws-ec2-ebs-automatic-snapshot-bash
 #
 # Additonal credits: Log function by Alan Franzoni; Pre-req check by Colin Johnson
+# Theo Chamley for managing other servers than the one the script is running on.
 #
 # PURPOSE: This Bash script can be used to take automatic snapshots of your Linux EC2 instance. Script process:
 # - Determine the instance ID of the EC2 server on which the script runs
@@ -26,10 +27,18 @@ set -o pipefail
 
 
 ## Variable Declartions ##
+region=$1
+instance_id=$2
 
 # Get Instance Details
-instance_id=$(wget -q -O- http://169.254.169.254/latest/meta-data/instance-id)
-region=$(wget -q -O- http://169.254.169.254/latest/meta-data/placement/availability-zone | sed -e 's/\([1-9]\).$/\1/g')
+if [ -z $instance_id ]; then
+    # Assuming local machine
+    instance_id=$(wget -q -O- http://169.254.169.254/latest/meta-data/instance-id)
+fi
+if [ -z $region ]; then
+    # Assuming local machine
+    region=$(wget -q -O- http://169.254.169.254/latest/meta-data/placement/availability-zone | sed -e 's/\([1-9]\).$/\1/g')
+fi
 
 # Set Logging Options
 logfile="/var/log/ebs-snapshot.log"
