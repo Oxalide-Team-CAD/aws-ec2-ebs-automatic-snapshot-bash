@@ -78,6 +78,7 @@ prerequisite_check() {
 
 # Function: Snapshot all volumes attached to this instance.
 snapshot_volumes() {
+	machine_name=$(aws ec2 describe-instances --instance-ids $instance_id --query 'Reservations[].Instances[].[InstanceId,State.Name,Tags[?Key==`Name`] | [0].Value]' --output text | awk '{print $NF}')
 	for volume_id in $volume_list; do
 		log "Volume ID is $volume_id"
 
@@ -85,7 +86,7 @@ snapshot_volumes() {
 		device_name=$(aws ec2 describe-volumes --region $region --output=text --volume-ids $volume_id --query 'Volumes[0].{Devices:Attachments[0].Device}')
 
 		# Take a snapshot of the current volume, and capture the resulting snapshot ID
-		snapshot_description="$(hostname)-$device_name-backup-$(date +%Y-%m-%d)"
+		snapshot_description="$machine_name-$device_name-backup-$(date +%Y-%m-%d)"
 
 		snapshot_id=$(aws ec2 create-snapshot --region $region --output=text --description $snapshot_description --volume-id $volume_id --query SnapshotId)
 		log "New snapshot is $snapshot_id"
